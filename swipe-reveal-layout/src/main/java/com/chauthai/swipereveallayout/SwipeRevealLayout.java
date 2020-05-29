@@ -152,6 +152,11 @@ public class SwipeRevealLayout extends ViewGroup {
          * @param slideOffset The new offset of the main view within its range, from 0-1
          */
         void onSlide(SwipeRevealLayout view, float slideOffset);
+
+        /**
+         * Called when the {@link SwipeRevealLayout} dispatched touch down event.
+         */
+        boolean onTouchDown(SwipeRevealLayout view);
     }
 
     /**
@@ -167,6 +172,11 @@ public class SwipeRevealLayout extends ViewGroup {
 
         @Override
         public void onSlide(SwipeRevealLayout view, float slideOffset) {}
+
+        @Override
+        public boolean onTouchDown(SwipeRevealLayout view) {
+            return false;
+        }
     }
 
     public SwipeRevealLayout(Context context) {
@@ -188,6 +198,14 @@ public class SwipeRevealLayout extends ViewGroup {
         mGestureDetector.onTouchEvent(event);
         mDragHelper.processTouchEvent(event);
         return true;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (mSwipeListener != null && ev.getAction() == MotionEvent.ACTION_DOWN && mSwipeListener.onTouchDown(this)) {
+            return false;
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override

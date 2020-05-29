@@ -92,6 +92,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
             frontLayout = itemView.findViewById(R.id.front_layout);
             deleteLayout = itemView.findViewById(R.id.delete_layout);
             textView = (TextView) itemView.findViewById(R.id.text);
+            swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
+                @Override
+                public boolean onTouchDown(SwipeRevealLayout view) {
+                    if (binderHelper.getOpenCount() > 0 && !view.isOpened()) {
+                        binderHelper.closeAll();
+                        return true;
+                    }
+                    return false;
+                }
+            });
         }
 
         public void bind(final String data) {
@@ -99,6 +109,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
                 @Override
                 public void onClick(View v) {
                     mDataSet.remove(getAdapterPosition());
+                    binderHelper.remove(data);
                     notifyItemRemoved(getAdapterPosition());
                 }
             });

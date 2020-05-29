@@ -207,7 +207,7 @@ public class ViewBinderHelper {
      * @param id layout which bind with this data object id will be excluded.
      * @param swipeLayout will be excluded.
      */
-    private void closeOthers(String id, SwipeRevealLayout swipeLayout) {
+    public void closeOthers(String id, SwipeRevealLayout swipeLayout) {
         synchronized (stateChangeLock) {
             // close other rows if openOnlyOne is true.
             if (getOpenCount() > 1) {
@@ -224,6 +224,32 @@ public class ViewBinderHelper {
                 }
             }
         }
+    }
+
+    /**
+     * Close all swipe layout.
+     */
+    public void closeAll() {
+        synchronized (stateChangeLock) {
+            // close other rows if openOnlyOne is true.
+            if (getOpenCount() > 0) {
+                for (Map.Entry<String, Integer> entry : mapStates.entrySet()) {
+                    if (entry.getValue() >= SwipeRevealLayout.STATE_OPEN) {
+                        entry.setValue(SwipeRevealLayout.STATE_CLOSE);
+                    }
+                }
+
+                for (SwipeRevealLayout layout : mapLayouts.values()) {
+                    if (layout.isOpened()) {
+                        layout.close(true);
+                    }
+                }
+            }
+        }
+    }
+
+    public void remove(String id) {
+        mapStates.remove(id);
     }
 
     private void setLockSwipe(boolean lock, String... id) {
@@ -243,7 +269,7 @@ public class ViewBinderHelper {
         }
     }
 
-    private int getOpenCount() {
+    public int getOpenCount() {
         int total = 0;
 
         for (int state : mapStates.values()) {
